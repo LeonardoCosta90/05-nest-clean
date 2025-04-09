@@ -19,7 +19,11 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@nestjs/*": ["node_modules/@nestjs/*"]
-    }
+      "@nestjs/*": ["node_modules/@nestjs/*"],
+    "@/*": ["src/*"]
+    },
+    "types": [
+      "vitest/globals"
+    ]
   }
 }
