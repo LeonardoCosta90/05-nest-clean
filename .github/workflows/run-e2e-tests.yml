@@ -4,7 +4,6 @@ on: [pull_request]
 
 jobs:
   run-e2e-tests:
-    name: Run E2E Tests
     runs-on: ubuntu-latest
 
     services:
@@ -13,12 +12,11 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: docker
-          POSTGRES_DB: nest-clean
-        # Opcional: adicionar um healthcheck para garantir que o banco esteja pronto
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         options: >-
-          --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=5
+          --health-cmd="pg_isready -U ${{ secrets.POSTGRES_USER }}" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
       - uses: actions/checkout@v3
@@ -29,46 +27,11 @@ jobs:
           cache: 'yarn'
 
       - run: yarn
-      # Se o container demorar para iniciar, aguarde alguns segundos
       - run: sleep 15
 
       - run: yarn test:e2e
         env:
           JWT_SECRET: test
-          JWT_PRIVATE_KEY: "-----BEGIN RSA PRIVATE KEY-----
-            MIIEpAIBAAKCAQEAo1b0xT7z1CqMqMD6xCO5vh9gPT+NNb0lQhDBusg0KqLZd8W3
-            dzJxQ8kLnW6sIUWqb7ahM/3vJ2ZkP3cFLK8+lj60E3PP7YHtQ1yR93k7NqgPv8+x
-            C8R1iM61k2rteHbdX3rYbCJzS/oQZ2TVde8YK1+o/U4I0aM+yb5S4B8j/DtKvt2G
-            qug0jAc1P0B+qsSZBjpH/42GZ+E2evNl/Lhng4vLZTFF3DJdC8kUs4qrGnjhZezt
-            mkcO1QgKfYF+Zh5Q3KspsM9F/9cZdk0uWjMxtX4tQ1jLN1I2hXZ3z9+kH+WiBDx+
-            HkP5TRDqHY7s2L1mWQdzXYco6F8udcJJWQlUwIDAQABAoIBAQCvWYAnTKVixU9O
-            WIXi0k5pJzL6Lcl6vYM8WjZP6PwFbE7Nzh4+f8qOaWDqzEcg7o06cxFJxo1tvkiE
-            Q28pBWX9ZDO5AMN0JUU5b3gBgVb65hLV6q6XxIRir0JwYdmt4V1V/RXHCPqIL8De
-            2ryE1x5ZLG5HeYpz0/gt0U1T5k3MEg5i0dYTq+7zPq1JeTTqBmsVpWeQTkWQm+21
-            w8Q7OGrOw2jYZqRyBkmQzz1YIGT+GXJDAaF96F7Xvx5xVUpba2fYth9KrA6Pm6b9
-            rBkD8gGJNvPZD0ZFGByxvnlFqZ5qn18ec7F/gb/xyPSljHSLr9+zJ3T2aEn7w/yb
-            r31Y2iTxAoGBAPyKkFPLULCko4bZU1ZRRXn56+9bOHy2bMwsrb3g9Q2LTmRa2cf8
-            3lEx5wEu1O1jaqhZtOrE9q33dYH3pEufwdt2VwBfi6BzQmBEdqroM9k+K+YTkeHK
-            szvKYeWD6OmnDzAo99oVF5HVP/wrcVpzTtqRfz+qB79HPWby8E/kGpnZAoGBAMxt
-            2eRoJ5dYuA+X7Nw9XKXwE6haF6TJDvBc+8hQZpT83U52l4X2lB1x7k9z9Y2RZT0S
-            xnb5Zwt6UPTcted7eYvBdknGdOkrFSn91e8cJGUtxPuGxGqZRCZUDL3jimDLN9aB
-            uI0ATMHix+9HsuUcYqhWfVvHt1QCMI0IwjjH1jIY9AoGBAJozVDvOzB/qBeQ2j3N
-            l5oC+uU8RVfDxK9CAZ8O+26WkdysWYu6rC03UzE2UpoyNrfJT1WawkCsuGOWorOW
-            M1bnWyEDFe+1XxPGnKsqnSxWfaM55Qq0eYxPHBhF8r8odnYSAQQfXnA6yp2owJZK
-            ZbMsJ+ClBdzGw+EQY/y6WaodAoGAcLDX3Ey+KMvoCuh6/5nW3CtJUXaLJK8BjdpI
-            bNiBRxujrbV6Cq1XFRKZ/YHfmtPV27t81JLLHRV/X0EQYm7F6uX07e6Kb2iT+e7h
-            6sEa1AqZS7V+B4gq8zHg7GULKeLYXBk7k3DdskIr8K+XczlOIPB8EOsd3+a/PUvx
-            7XcWECkCgYEAkiB4aHfFw6MJGgRLnG3f5JzG2hCXSeOQg3b5x1I3xS4yX2xCEpVK
-            CW4G3nUwK9Cv3IYMS1zKs8Y35B5fnD6B4NfDk3sO4HIh/j5Ge0hI3TkwXEwfSewS
-            WRjctDOuYZ1VhJQdcSGaY8G9b72fZQCo+LzX+XXZ+H0V1T/9uJP+di0=
-            -----END RSA PRIVATE KEY-----"
-          JWT_PUBLIC_KEY: "-----BEGIN PUBLIC KEY-----
-            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo1b0xT7z1CqMqMD6xCO5
-            vh9gPT+NNb0lQhDBusg0KqLZd8W3dzJxQ8kLnW6sIUWqb7ahM/3vJ2ZkP3cFLK8+
-            lj60E3PP7YHtQ1yR93k7NqgPv8+xC8R1iM61k2rteHbdX3rYbCJzS/oQZ2TVde8Y
-            K1+o/U4I0aM+yb5S4B8j/DtKvt2Gqug0jAc1P0B+qsSZBjpH/42GZ+E2evNl/Lhn
-            g4vLZTFF3DJdC8kUs4qrGnjhZeztmkcO1QgKfYF+Zh5Q3KspsM9F/9cZdk0uWjMx
-            tX4tQ1jLN1I2hXZ3z9+kH+WiBDx+HkP5TRDqHY7s2L1mWQdzXYco6F8udcJJWQlU
-            wIDAQAB
-            -----END PUBLIC KEY-----"
-          DATABASE_URL: "postgresql://postgres:docker@localhost:5432/nest-clean?schema=public"
+          JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+          JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
