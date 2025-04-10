@@ -27,7 +27,11 @@ jobs:
           cache: 'yarn'
 
       - run: yarn
-      - run: sleep 15
+      - run: sleep 30
+
+      - run: yarn prisma db pull
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - run: yarn test:e2e
         env:
