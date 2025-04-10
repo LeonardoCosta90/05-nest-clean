@@ -12,11 +12,13 @@ jobs:
         image: postgres
         ports:
           - 5432:5432
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: docker
-      POSTGRES_DB: nest-clean
-
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: docker
+          POSTGRES_DB: nest-clean
+        # Opcional: adicionar um healthcheck para garantir que o banco esteja pronto
+        options: >-
+          --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
       - uses: actions/checkout@v3
@@ -27,7 +29,12 @@ jobs:
           cache: 'yarn'
 
       - run: yarn
+      # Se o container demorar para iniciar, aguarde alguns segundos
+      - run: sleep 15
+
       - run: yarn test:e2e
         env:
-          JWT_SECRET: testing
+          JWT_SECRET: test
+          JWT_PRIVATE_KEY: "sua-chave-privada-de-teste"
+          JWT_PUBLIC_KEY: "sua-chave-pública-de-teste"
           DATABASE_URL: "postgresql://postgres:docker@localhost:5432/nest-clean?schema=public"
