@@ -30,7 +30,7 @@ module.exports = [
           arrowParens: 'always',
           semi: false,
         },
-      ],
+      ]
     },
     ignores: ['node_modules/'],
     files: ['**/*.ts'],
