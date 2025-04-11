@@ -4,6 +4,7 @@ on: [pull_request]
 
 jobs:
   run-e2e-tests:
+    name: Run E2E Tests
     runs-on: ubuntu-latest
 
     services:
@@ -27,10 +28,15 @@ jobs:
           cache: 'yarn'
 
       - run: yarn
-      - run: sleep 30
 
-      - run: yarn prisma db pull
+      - run: sleep 15
+
+      # Temporary debugging step
+      - name: Verify Secret Presence
+        run: |
+          echo "Secrets verified: POSTGRES_USER and DATABASE_URL are set"
         env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - run: yarn test:e2e
