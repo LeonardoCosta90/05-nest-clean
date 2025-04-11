@@ -33,7 +33,8 @@ jobs:
       - run: yarn test:e2e
         env:
           JWT_SECRET: test
-          JWT_PRIVATE_KEY: "-----BEGIN RSA PRIVATE KEY-----
+          JWT_PRIVATE_KEY: |
+            -----BEGIN RSA PRIVATE KEY-----
             MIIEpAIBAAKCAQEAo1b0xT7z1CqMqMD6xCO5vh9gPT+NNb0lQhDBusg0KqLZd8W3
             dzJxQ8kLnW6sIUWqb7ahM/3vJ2ZkP3cFLK8+lj60E3PP7YHtQ1yR93k7NqgPv8+x
             C8R1iM61k2rteHbdX3rYbCJzS/oQZ2TVde8YK1+o/U4I0aM+yb5S4B8j/DtKvt2G
@@ -59,8 +60,10 @@ jobs:
             7XcWECkCgYEAkiB4aHfFw6MJGgRLnG3f5JzG2hCXSeOQg3b5x1I3xS4yX2xCEpVK
             CW4G3nUwK9Cv3IYMS1zKs8Y35B5fnD6B4NfDk3sO4HIh/j5Ge0hI3TkwXEwfSewS
             WRjctDOuYZ1VhJQdcSGaY8G9b72fZQCo+LzX+XXZ+H0V1T/9uJP+di0=
-            -----END RSA PRIVATE KEY-----"
-          JWT_PUBLIC_KEY: "-----BEGIN PUBLIC KEY-----
+            -----END RSA PRIVATE KEY-----
+            "
+          JWT_PUBLIC_KEY: |
+            -----BEGIN PUBLIC KEY-----
             MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo1b0xT7z1CqMqMD6xCO5
             vh9gPT+NNb0lQhDBusg0KqLZd8W3dzJxQ8kLnW6sIUWqb7ahM/3vJ2ZkP3cFLK8+
             lj60E3PP7YHtQ1yR93k7NqgPv8+xC8R1iM61k2rteHbdX3rYbCJzS/oQZ2TVde8Y
@@ -68,5 +71,5 @@ jobs:
             g4vLZTFF3DJdC8kUs4qrGnjhZeztmkcO1QgKfYF+Zh5Q3KspsM9F/9cZdk0uWjMx
             tX4tQ1jLN1I2hXZ3z9+kH+WiBDx+HkP5TRDqHY7s2L1mWQdzXYco6F8udcJJWQlU
             wIDAQAB
-            -----END PUBLIC KEY-----"
+            -----END PUBLIC KEY-----
           DATABASE_URL: "postgresql://postgres:docker@localhost:5432/nest-clean?schema=public"
