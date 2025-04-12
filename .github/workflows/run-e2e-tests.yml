@@ -28,7 +28,6 @@ jobs:
           cache: 'yarn'
 
       - run: yarn
-      # Se o container demorar para iniciar, aguarde alguns segundos
       - run: sleep 15
 
       - run: yarn test:e2e
