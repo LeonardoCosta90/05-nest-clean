@@ -1,5 +1,4 @@
 import { AggregateRoot } from '@/core/entities/aggregate-root'
-import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 import { AnswerCreatedEvent } from '../events/answer-created-event'
@@ -9,7 +8,7 @@ export interface AnswerProps {
   questionId: UniqueEntityID
   content: string
   createdAt: Date
-  updatedAt?: Date
+  updatedAt?: Date | null
 }
 
 export class Answer extends AggregateRoot<AnswerProps> {
