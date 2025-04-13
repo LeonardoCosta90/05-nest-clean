@@ -9,7 +9,7 @@ import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { z } from 'zod'
 import { CommentOnQuestionUseCase } from '@/domain/forum/application/use-cases/comment-on-question'
-import { ZodValidationPipe } from '../zod-validation-pipe/zod-validation-pipe.pipe'
+import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 
 const commentOnQuestionBodySchema = z.object({
   content: z.string(),

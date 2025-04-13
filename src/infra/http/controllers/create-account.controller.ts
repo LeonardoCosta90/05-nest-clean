@@ -10,7 +10,7 @@ import {
 
 import { z } from 'zod'
 import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student'
-import { ZodValidationPipe } from '../zod-validation-pipe/zod-validation-pipe.pipe'
+import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 import { StudentAlreadyExistsError } from '@/domain/forum/application/use-cases/errors/student-already-exists-error'
 import { Public } from '@/infra/auth/public'
 
