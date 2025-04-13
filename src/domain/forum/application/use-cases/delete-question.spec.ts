@@ -9,7 +9,10 @@ let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let sut: DeleteQuestionUseCase
 
 const dummyAttachmentsRepository: QuestionAttachmentsRepository = {
+  createMany: vi.fn(),
+  deleteMany: vi.fn(),
   deleteManyByQuestionId: vi.fn(),
+  findManyByQuestionId: vi.fn(),
 }
 
 describe('Delete Question', () => {
