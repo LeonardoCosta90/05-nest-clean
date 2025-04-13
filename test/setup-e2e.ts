@@ -1,8 +1,11 @@
-import 'dotenv/config'
+import { config } from 'dotenv'
 
 import { PrismaClient } from '@prisma/client'
 import { randomUUID } from 'node:crypto'
 import { execSync } from 'node:child_process'
+
+config({ path: '.env', override: true })
+config({ path: '.env.test.local', override: true })
 
 const prisma = new PrismaClient()
 
@@ -26,9 +29,4 @@ beforeAll(async () => {
   process.env.DATABASE_URL = databaseURL
 
   execSync('yarn prisma migrate deploy')
-})
-
-afterAll(async () => {
-  await prisma.$executeRawUnsafe(`DROP SCHEMA IF EXISTS "${schemaId}" CASCADE`)
-  await prisma.$disconnect()
 })
