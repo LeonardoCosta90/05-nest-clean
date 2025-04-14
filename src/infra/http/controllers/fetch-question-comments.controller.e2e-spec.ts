@@ -1,71 +1,90 @@
-import { AppModule } from '@/infra/app.module'
-import { DatabaseModule } from '@/infra/database/database.module'
-import { INestApplication } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { Test } from '@nestjs/testing'
-import request from 'supertest'
-import { QuestionFactory } from 'test/factories/make-question'
-import { QuestionCommentFactory } from 'test/factories/make-question-comment'
-import { StudentFactory } from 'test/factories/make-student'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { InMemoryQuestionCommentsRepository } from 'test/repositories/in-memory-question-comments-repository'
+import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-question-comments'
+import { makeQuestionComment } from 'test/factories/make-question-comment'
+import { InMemoryStudentsRepository } from 'test/repositories/in-memory-students-repository'
+import { makeStudent } from 'test/factories/make-student'
 
-describe('Fetch question comments (E2E)', () => {
-  let app: INestApplication
-  let studentFactory: StudentFactory
-  let questionFactory: QuestionFactory
-  let questionCommentFactory: QuestionCommentFactory
-  let jwt: JwtService
+let inMemoryStudentsRepository: InMemoryStudentsRepository
+let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
+let sut: FetchQuestionCommentsUseCase
 
-  beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule, DatabaseModule],
-      providers: [StudentFactory, QuestionFactory, QuestionCommentFactory],
-    }).compile()
-
-    app = moduleRef.createNestApplication()
-
-    studentFactory = moduleRef.get(StudentFactory)
-    questionFactory = moduleRef.get(QuestionFactory)
-    questionCommentFactory = moduleRef.get(QuestionCommentFactory)
-    jwt = moduleRef.get(JwtService)
-
-    await app.init()
+describe('Fetch Question Comments', () => {
+  beforeEach(() => {
+    inMemoryStudentsRepository = new InMemoryStudentsRepository()
+    inMemoryQuestionCommentsRepository = new InMemoryQuestionCommentsRepository(
+      inMemoryStudentsRepository,
+    )
+    sut = new FetchQuestionCommentsUseCase(inMemoryQuestionCommentsRepository)
   })
 
-  test('[GET] /questions/:questionId/comments', async () => {
-    const user = await studentFactory.makePrismaStudent()
+  it('should be able to fetch question comments', async () => {
+    const student = makeStudent({ name: 'John Doe' })
 
-    const accessToken = jwt.sign({ sub: user.id.toString() })
+    inMemoryStudentsRepository.items.push(student)
 
-    const question = await questionFactory.makePrismaQuestion({
-      authorId: user.id,
+    const comment1 = makeQuestionComment({
+      questionId: new UniqueEntityID('question-1'),
+      authorId: student.id,
     })
 
-    await Promise.all([
-      questionCommentFactory.makePrismaQuestionComment({
-        authorId: user.id,
-        questionId: question.id,
-        content: 'Comment 01',
-      }),
-      questionCommentFactory.makePrismaQuestionComment({
-        authorId: user.id,
-        questionId: question.id,
-        content: 'Comment 02',
-      }),
-    ])
+    const comment2 = makeQuestionComment({
+      questionId: new UniqueEntityID('question-1'),
+      authorId: student.id,
+    })
 
-    const questionId = question.id.toString()
+    const comment3 = makeQuestionComment({
+      questionId: new UniqueEntityID('question-1'),
+      authorId: student.id,
+    })
 
-    const response = await request(app.getHttpServer())
-      .get(`/questions/${questionId}/comments`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send()
+    await inMemoryQuestionCommentsRepository.create(comment1)
+    await inMemoryQuestionCommentsRepository.create(comment2)
+    await inMemoryQuestionCommentsRepository.create(comment3)
 
-    expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual({
-      comments: expect.arrayContaining([
-        expect.objectContaining({ content: 'Comment 01' }),
-        expect.objectContaining({ content: 'Comment 01' }),
+    const result = await sut.execute({
+      questionId: 'question-1',
+      page: 1,
+    })
+
+    expect(result.value?.comments).toHaveLength(3)
+    expect(result.value?.comments).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          author: 'John Doe',
+          commentId: comment1.id,
+        }),
+        expect.objectContaining({
+          author: 'John Doe',
+          commentId: comment2.id,
+        }),
+        expect.objectContaining({
+          author: 'John Doe',
+          commentId: comment3.id,
+        }),
       ]),
+    )
+  })
+
+  it('should be able to fetch paginated question comments', async () => {
+    const student = makeStudent({ name: 'John Doe' })
+
+    inMemoryStudentsRepository.items.push(student)
+
+    for (let i = 1; i <= 22; i++) {
+      await inMemoryQuestionCommentsRepository.create(
+        makeQuestionComment({
+          questionId: new UniqueEntityID('question-1'),
+          authorId: student.id,
+        }),
+      )
+    }
+
+    const result = await sut.execute({
+      questionId: 'question-1',
+      page: 2,
     })
+
+    expect(result.value?.comments).toHaveLength(2)
   })
 })
