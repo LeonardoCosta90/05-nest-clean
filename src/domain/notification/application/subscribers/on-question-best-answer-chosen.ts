@@ -6,8 +6,8 @@ import { SendNotificationUseCase } from '@/domain/notification/application/use-c
 
 export class OnQuestionBestAnswerChosen implements EventHandler {
   constructor(
-    private answersRepository: AnswersRepository,
-    private sendNotification: SendNotificationUseCase,
+    private readonly answersRepository: AnswersRepository,
+    private readonly sendNotification: SendNotificationUseCase,
   ) {
     this.setupSubscriptions()
   }
