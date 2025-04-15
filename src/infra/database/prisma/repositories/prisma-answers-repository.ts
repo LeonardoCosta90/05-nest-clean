@@ -10,8 +10,8 @@ import { DomainEvents } from '@/core/events/domain-events'
 @Injectable()
 export class PrismaAnswersRepository implements AnswersRepository {
   constructor(
-    private prisma: PrismaService,
-    private answerAttachmentsRepository: AnswerAttachmentsRepository,
+    private readonly prisma: PrismaService,
+    private readonly answerAttachmentsRepository: AnswerAttachmentsRepository,
   ) {}
 
   async findById(id: string): Promise<Answer | null> {
